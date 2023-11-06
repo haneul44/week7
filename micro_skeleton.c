@@ -1,3 +1,18 @@
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image.h"
+#include "stb_image_write.h"
+
+
+#include <math.h>
+#include <stdio.h>
+#include <float.h>
+
+
+void mirror_transform (unsigned char* in, int const height, int const width, int const channel, unsigned char* out);
+void grayScale_transform (unsigned char* in, int const height, int const width, int const channel, unsigned char* out);
+void sobelFiltering_transform (unsigned char* in, int const height, int const width, int const channel, unsigned char* out);
+
 int main()
 {
 
@@ -43,7 +58,7 @@ int main()
 	return 0;
 }
 
-void mirror_transform(unsigned char* in, int const height, int const width, int const channel, unsigned char* out) {
+void mirror_transform (unsigned char* in, int const height, int const width, int const channel, unsigned char* out) {
 	int h, w, c;
 
 	for (h = 0; h < height; h++)
@@ -52,13 +67,13 @@ void mirror_transform(unsigned char* in, int const height, int const width, int 
 		{
 			for (c = 0; c < channel; c++)
 			{
-				out[h * width * channel + w * channel + c] = in[h * width * channel + ((width - w) - 1) * channel + c];
+				out[h*width*channel+w*channel+c] = in[h*width*channel+((width-w)-1)*channel+c];
 			}
 		}
 	}
 }
 
-void grayScale_transform(unsigned char* in, int const height, int const width, int const channel, unsigned char* out) {
+void grayScale_transform (unsigned char* in, int const height, int const width, int const channel, unsigned char* out) {
 	int h, w, c, avg;
 
 	for (h = 0; h < height; h++)
@@ -69,18 +84,18 @@ void grayScale_transform(unsigned char* in, int const height, int const width, i
 
 			for (c = 0; c < channel; c++)
 			{
-				avg += in[h * width * channel + w * channel + c];
+				avg += in[h*width*channel+w*channel+c];
 			}
-
+		
 			for (c = 0; c < channel; c++)
 			{
-				out[h * width * channel + w * channel + c] = avg / 3;
+				out[h*width*channel+w*channel+c] = avg/3;
 			}
 		}
 	}
 }
 
-void sobelFiltering_transform(unsigned char* in, int const height, int const width, int const channel, unsigned char* out) {
+void sobelFiltering_transform (unsigned char* in, int const height, int const width, int const channel, unsigned char* out) {
 	int h, w, c, avg, x_filter, y_filter;
 	int sum = 0;
 	int x_conv[3][3] = { {-1,0,1},{-2,0,2},{-1,0,1} };
@@ -115,7 +130,7 @@ void sobelFiltering_transform(unsigned char* in, int const height, int const wid
 			y_filter = y_filter + y_conv[0][0] * gray[h * width * channel + w * channel + c] + y_conv[0][1] * gray[h * width * channel + (w + 1) * channel + c] + y_conv[0][2] * gray[h * width * channel + (w + 2) * channel + c] + y_conv[2][0] * gray[(h + 2) * width * channel + w * channel + c] + y_conv[2][1] * gray[(h + 2) * width * channel + (w + 1) * channel + c] + y_conv[2][2] * gray[(h + 2) * width * channel + (w + 2) * channel + c];
 
 			sum = abs(x_filter) + abs(y_filter);
-
+				
 			out[(h + 1) * width * channel + (w + 1) * channel] = sum;
 			out[(h + 1) * width * channel + (w + 1) * channel + 1] = sum;
 			out[(h + 1) * width * channel + (w + 1) * channel + 2] = sum;
